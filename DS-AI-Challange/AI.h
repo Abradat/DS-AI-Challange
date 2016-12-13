@@ -17,6 +17,17 @@ class AI
 {
 public:
 	void doTurn(World *world);
+
+private:
+    World *myWorld;
+    const int myTeamId = myWorld->getMyId();
+    const int escapeConst = myWorld -> getEscapeConstant();
+    const int nodeBounsConst = myWorld -> getNodeBonusConstant();
+    const int edgeBounsConst = myWorld -> getEdgeBonusConstant();
+    const int lArmyMaxConst = myWorld -> getLowArmyBound();
+    const int mArmyMaxConst = myWorld -> getMediumArmyBound();
+    const int mCasConst = myWorld -> getMediumCasualtyCoefficient();
+    const int lCasConst = myWorld -> getLowCasualtyCoefficient();
 };
 
 #endif // _AI_H
