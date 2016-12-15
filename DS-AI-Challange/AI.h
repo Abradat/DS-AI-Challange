@@ -29,13 +29,13 @@ private:
     int map; // 1 Dota, 2 Eye, 3 Sample, 4 Tiny
     int totalTurn;
     int tactics = 1; // 1 : Attack, 2: hold Position, 3: Retreat
+    int a = 0, b = 0, c=0;
+    
+    //calibration
     
     std::vector<Node*> supporters;
-    std::vector<Node*> toSupporters;
-    std::vector<Node*> deffenders;
-    std::vector<Node*> toDeffenders;
+    std::vector<Node*> transporters;
     std::vector<Node*> attackers;
-    std::vector<Node*> toAttackers;
     std::vector<Node*> neighbours;
     std::vector<Node*> myNodes;
     
@@ -43,6 +43,9 @@ public:
 	void doTurn(World *world);
     int measurePower(int armyCount);
     int changeTactics(std::vector<Node*> myNodes);
+    int getTactics();
+    void decRoles(std::vector<Node*> myNodes);
+    void decAttackerStatus(std::vector<Node*> myAttackers);
 
 
 };
