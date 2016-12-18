@@ -10,6 +10,7 @@
 #include "Network.h"
 #include <chrono>
 #include <unistd.h>
+#include "World.h"
 
 int toInt(std::string str) {
 	int ans=0;

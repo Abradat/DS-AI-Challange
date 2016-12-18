@@ -26,6 +26,7 @@ private:
     int mArmyMaxConst;
     int mCasConst;
     int lCasConst;
+    unsigned long int nodesSize;
     int map; // 1 Dota, 2 Eye, 3 Sample, 4 Tiny
     int totalTurn;
     int tactics = 1; // 1 : Attack, 2: hold Position, 3: Retreat
@@ -46,6 +47,7 @@ public:
     int getTactics();
     void decRoles(std::vector<Node*> myNodes);
     void decAttackerStatus(std::vector<Node*> myAttackers);
+    void dijkstra(std::vector<Node*> myNodes, std::vector<Node*> supporters, Node *src);
 
 
 };

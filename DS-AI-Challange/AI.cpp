@@ -5,13 +5,14 @@
 #include <iostream>
 
 
+
 void AI::doTurn(World *world)
 {
-    
     srand(time(NULL));
     
     if(init)
     {
+        //std::cout<<INT_MAX<<std::endl;
         myNodes = world -> getMyNodes();
         //attackers = world ->getMyNodes();
         
@@ -29,6 +30,7 @@ void AI::doTurn(World *world)
         mArmyMaxConst = world -> getMediumArmyBound();
         lCasConst = world -> getLowCasualtyCoefficient();
         mCasConst = world -> getMediumCasualtyCoefficient();
+        nodesSize = world -> getMap() -> getNodes().size();
         
         if(world -> getMap() ->getNodes().size() == 37)
             map = 1;
@@ -49,6 +51,18 @@ void AI::doTurn(World *world)
     myNodes = world -> getMyNodes();
     decRoles(myNodes);
     decAttackerStatus(attackers);
+    
+    for(auto& test: myNodes)
+    {
+        if(test -> getIndex() == 0)
+            dijkstra(myNodes, supporters, test);
+    }
+    //dijkstra(myNodes, supporters, test);
+    for(auto& myNode : myNodes)
+    {
+        std::cout<< myNode->getArmyCount() << " : " << myNode -> dist << std::endl;
+    }
+    std::cout<<"#######\n\n\n";
     //Every Round Executables Finish
     
     //Debugging Prints Start
@@ -199,3 +213,43 @@ void AI::decAttackerStatus(std::vector<Node*> myAttackers)
             myAttacker -> status = 3;
     }
 }
+
+void AI::dijkstra(std::vector<Node*> myNodes, std::vector<Node*> supporters, Node *src)
+{
+    for(auto& myNode: myNodes)
+        myNode -> dist = INT_MAX, myNode -> sptSet = false;
+    
+    src -> dist = 0;
+    int min = INT_MAX;
+    Node *pickedNode = nullptr;
+    std::vector<Node*> neighbours;
+    
+    for(auto &myNode : myNodes)
+    {
+        //if(myNode == src)
+        //    continue;
+        min = INT_MAX;
+        for(auto &mNode : myNodes)
+        {
+            if(!mNode -> sptSet)
+            {
+                if(min > mNode -> dist)
+                {
+                    min = mNode -> dist;
+                    pickedNode = mNode;
+                }
+            }
+        }
+        //std::cout<<pickedNode -> getArmyCount()<<std::endl;
+        pickedNode -> sptSet = true;
+        neighbours = pickedNode -> getNeighbours();
+        for(auto& neighbour : neighbours)
+        {
+            if(!neighbour -> sptSet && pickedNode -> dist != INT_MAX && (pickedNode -> dist + 1 < neighbour -> dist) && neighbour ->getOwner() == myTeamId)
+                neighbour -> dist = pickedNode -> dist + 1;
+        }
+    }
+    
+}
+
+

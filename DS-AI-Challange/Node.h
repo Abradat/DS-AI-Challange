@@ -49,6 +49,8 @@ public:
     
     int role = 0; // 1 : attacker, 2: support, 3: transporter
     int status = 0; // for attackers - > 1 : conquare and attack, 2: attack, 3: conquare
+    int dist;
+    bool sptSet;
 
 };
 
