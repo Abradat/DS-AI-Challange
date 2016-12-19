@@ -31,6 +31,8 @@ private:
     int totalTurn;
     int tactics = 1; // 1 : Attack, 2: hold Position, 3: Retreat
     int a = 0, b = 0, c=0;
+    Node *nextNode;
+    Node *an;
     
     //calibration
     
@@ -48,6 +50,10 @@ public:
     void decRoles(std::vector<Node*> myNodes);
     void decAttackerStatus(std::vector<Node*> myAttackers);
     void dijkstra(std::vector<Node*> myNodes, std::vector<Node*> supporters, Node *src);
+    void printDijkstra(std::vector<Node*> myNode, Node *dst);
+    void predictDijkstra(Node *src, Node *dst);
+    void toSupporters(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> supporters, std::vector<Node*> transporters);
+    void toAttackers(World *myWorld, std::vector<Node*> supporters, std::vector<Node*> attackers);
 
 
 };

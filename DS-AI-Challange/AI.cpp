@@ -51,18 +51,40 @@ void AI::doTurn(World *world)
     myNodes = world -> getMyNodes();
     decRoles(myNodes);
     decAttackerStatus(attackers);
-    
-    for(auto& test: myNodes)
-    {
-        if(test -> getIndex() == 0)
-            dijkstra(myNodes, supporters, test);
-    }
+    toSupporters(world, myNodes, supporters, transporters);
+    toAttackers(world, supporters, attackers);
+    //for(auto& test: myNodes)
+    //{
+     //   if(test -> getIndex() == 0)
+     //       dijkstra(myNodes, supporters, test);
+    //}
     //dijkstra(myNodes, supporters, test);
-    for(auto& myNode : myNodes)
+    /*for(auto& myNode : myNodes)
     {
         std::cout<< myNode->getArmyCount() << " : " << myNode -> dist << std::endl;
     }
     std::cout<<"#######\n\n\n";
+     */
+    /*
+    for(auto& test: myNodes)
+    {
+        if(test -> getIndex() == 0)
+            an = test;
+    }
+    
+    for(auto& myNode: myNodes)
+    {
+        if(myNode == an)
+            continue;
+        
+        printDijkstra(myNodes, myNode);
+        std::cout<<"\n";
+        predictDijkstra(an, myNode);
+        std::cout<<nextNode -> getArmyCount() <<"\n";
+    }
+    
+    std::cout<<"\n\n\n\n######\n";
+     */
     //Every Round Executables Finish
     
     //Debugging Prints Start
@@ -119,7 +141,32 @@ void AI::doTurn(World *world)
     }
     if(map == 2)
     {
-        
+        if(tactics == 1)
+        {
+            attackers = world -> getMyNodes();
+            for(auto& attacker : attackers)
+            {
+                int attackerPower = attacker -> getArmyCount();
+                int aMeasured = measurePower(attackerPower);
+                neighbours = attacker -> getNeighbours();
+                for(auto& neighbour : neighbours)
+                {
+                    if(neighbour -> getOwner() == -1 || neighbour -> getOwner() == oppTeamId)
+                    {
+                        if(attackerPower > 40)
+                            world -> moveArmy(attacker, neighbour, attackerPower/2);
+                        else if(attackerPower > 30 )
+                            world -> moveArmy(attacker, neighbour, 20);
+                        else if(attackerPower > 20)
+                            world -> moveArmy(attacker, neighbour, 10);
+                        else if(attackerPower > 15)
+                            world -> moveArmy(attacker, neighbour, 5);
+                        else
+                            world -> moveArmy(attacker, neighbour, 3);
+                    }
+                }
+            }
+        }
     }
     /*for(auto& myNode: myNodes)
     {
@@ -217,7 +264,7 @@ void AI::decAttackerStatus(std::vector<Node*> myAttackers)
 void AI::dijkstra(std::vector<Node*> myNodes, std::vector<Node*> supporters, Node *src)
 {
     for(auto& myNode: myNodes)
-        myNode -> dist = INT_MAX, myNode -> sptSet = false;
+        myNode -> dist = INT_MAX, myNode -> sptSet = false, myNode -> parent = nullptr;
     
     src -> dist = 0;
     int min = INT_MAX;
@@ -246,10 +293,83 @@ void AI::dijkstra(std::vector<Node*> myNodes, std::vector<Node*> supporters, Nod
         for(auto& neighbour : neighbours)
         {
             if(!neighbour -> sptSet && pickedNode -> dist != INT_MAX && (pickedNode -> dist + 1 < neighbour -> dist) && neighbour ->getOwner() == myTeamId)
+            {
                 neighbour -> dist = pickedNode -> dist + 1;
+                neighbour -> parent = pickedNode;
+            }
         }
     }
     
 }
+
+void AI::printDijkstra(std::vector<Node*> myNodes, Node *dst)
+{
+    if( dst -> parent == nullptr )
+    {
+        std::cout<< dst-> getArmyCount() << " ";
+        return;
+    }
+    
+    printDijkstra(myNodes, dst -> parent );
+    std::cout<< dst->getArmyCount() << " ";
+}
+
+void AI::predictDijkstra(Node *src, Node *dst)
+{
+    Node *aux;
+    aux = dst;
+    if(aux -> parent == nullptr)
+        return;
+    else
+    {
+        while(aux -> parent != src)
+            aux = aux -> parent;
+        nextNode = aux;
+    }
+}
+
+void AI::toSupporters(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> supporters, std::vector<Node*> transporters)
+{
+    int min = INT_MAX;
+    Node *aux = nullptr;
+    for(auto& transporter : transporters)
+    {
+        dijkstra(myNodes, supporters, transporter);
+        
+        for(auto& supporter : supporters)
+        {
+            if(min > supporter -> dist)
+            {
+                min = supporter -> dist;
+                aux = supporter;
+            }
+        }
+        printDijkstra(myNodes, transporter);
+        std::cout<<"\n";
+        predictDijkstra(transporter, aux);
+        if(transporter ->getArmyCount() > 5)
+            myWorld -> moveArmy(transporter, nextNode, transporter->getArmyCount() - 5);
+    }
+    std::cout<<"\n\n\n\n###########\n";
+}
+
+void AI::toAttackers(World *myWorld, std::vector<Node*> supporters, std::vector<Node*> attackers)
+{
+    std::vector<Node*> neighbours;
+    std::vector<Node*> attNeighbours;
+    for(auto& supporter : supporters)
+    {
+        attNeighbours.clear();
+        neighbours = supporter -> getNeighbours();
+        for(auto& neighbour : neighbours)
+        {
+            if( neighbour -> role == 1)
+                attNeighbours.push_back(neighbour);
+        }
+        for(auto& attNeighbour : attNeighbours)
+            myWorld -> moveArmy(supporter, attNeighbour, ((supporter -> getArmyCount()) / static_cast<int>(attNeighbours.size()))-1);
+    }
+}
+
 
 
