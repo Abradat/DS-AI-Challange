@@ -49,14 +49,15 @@ public:
     int getTactics();
     void decRoles(std::vector<Node*> myNodes);
     void decAttackerStatus(std::vector<Node*> myAttackers);
-    void dijkstra(std::vector<Node*> myNodes, std::vector<Node*> supporters, Node *src);
+    void dijkstra(std::vector<Node*> myNodes, Node *src);
     void printDijkstra(std::vector<Node*> myNode, Node *dst);
     void predictDijkstra(Node *src, Node *dst);
     void toSupporters(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> supporters, std::vector<Node*> transporters);
     void toAttackers(World *myWorld, std::vector<Node*> supporters, std::vector<Node*> attackers);
     
+    void sort(std::vector<Node*> nodes, int procedure);
     void measureTactics(World *myWorld);
-    void attack(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> attackers);
+    void attackStrategy(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> attackers);
 
 
 };

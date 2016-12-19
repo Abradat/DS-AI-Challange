@@ -139,7 +139,7 @@ void AI::doTurn(World *world)
                 }
             }
              */
-            attack(world, myNodes, attackers);
+            attackStrategy(world, myNodes, attackers);
 
         }
     }
@@ -265,7 +265,7 @@ void AI::decAttackerStatus(std::vector<Node*> myAttackers)
     }
 }
 
-void AI::dijkstra(std::vector<Node*> myNodes, std::vector<Node*> supporters, Node *src)
+void AI::dijkstra(std::vector<Node*> myNodes, Node *src)
 {
     for(auto& myNode: myNodes)
         myNode -> dist = INT_MAX, myNode -> sptSet = false, myNode -> parent = nullptr;
@@ -338,7 +338,7 @@ void AI::toSupporters(World *myWorld, std::vector<Node*> myNodes, std::vector<No
     Node *aux = nullptr;
     for(auto& transporter : transporters)
     {
-        dijkstra(myNodes, supporters, transporter);
+        dijkstra(myNodes, transporter);
         min = INT_MAX;
         aux = nullptr;
         //std::cout<< transporter -> getArmyCount() << " : \n";
@@ -384,44 +384,42 @@ void AI::measureTactics(World *myWorld)
     
 }
 
-void AI::attack(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> attackers)
+void AI::sort(std::vector<Node*> nodes, int procedure)
+{
+
+}
+void AI::attackStrategy(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> attackers)
 {
     std::vector<Node*> neighbours;
-    Node *moveTarget;
+    std::vector<Node*> opps;
+    Node *aux;
     int selfPower, oppPower, oppCounts, suppPower, suppCount, attPower, attCount, freeCount;
     for(auto& attacker : attackers)
     {
         selfPower = 0, oppPower = 0, oppCounts = 0, suppPower = 0, suppCount = 0, attCount = 0, freeCount = 0;
-        moveTarget = nullptr;
+        attacker -> freeNodes.clear(), attacker -> suppNodes.clear(), attacker -> oppNodes.clear();
         selfPower = measurePower(attacker -> getArmyCount());
         neighbours = attacker -> getNeighbours();
-        for(auto& neighbour : neighbours)
+        
+        opps = myWorld -> getOpponentNodes();
+        dijkstra(opps, attacker);
+        
+        //sorting Start
+        for(int oppCnt1 = 0; oppCnt1 < opps.size(); oppCnt1 ++)
         {
-            if(neighbour -> getOwner() == oppTeamId)
+            for(int oppCnt2 = oppCnt1; oppCnt2 < opps.size(); oppCnt2++)
             {
-                oppPower += measurePower(neighbour -> getArmyCount());
-                oppCounts ++;
-                moveTarget = neighbour;
+                if(opps[oppCnt1] -> dist > opps[oppCnt2] -> dist)
+                {
+                    aux = opps[oppCnt1];
+                    opps[oppCnt1] = opps[oppCnt2];
+                    opps[oppCnt2] = aux;
+                }
             }
-            else if(neighbour -> getOwner() == myTeamId && neighbour -> role == 2)
-            {
-                suppPower += measurePower(neighbour -> getArmyCount());
-                suppCount ++;
-            }
-            else if(neighbour -> getOwner() == myTeamId && neighbour -> role == 1)
-            {
-                attPower = measurePower(neighbour -> getArmyCount());
-                attCount ++;
-            }
-            else if(neighbour -> getOwner() == -1)
-            {
-                freeCount ++;
-                myWorld -> moveArmy(attacker, neighbour, attacker -> getArmyCount());
-            }
-            
         }
-        if(moveTarget != nullptr)
-            myWorld ->moveArmy(attacker, moveTarget, attacker -> getArmyCount());
+        //sorting finish
+        attacker -> oppNodes = opps;
+        
     }
 }
 

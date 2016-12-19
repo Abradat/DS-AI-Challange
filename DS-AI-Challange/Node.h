@@ -52,6 +52,11 @@ public:
     int dist;
     bool sptSet;
     Node *parent;
+    
+    Node *target;
+    std::vector<Node*> freeNodes;
+    std::vector<Node*> oppNodes;
+    std::vector<Node*> suppNodes;
 
 };
 
