@@ -54,6 +54,9 @@ public:
     void predictDijkstra(Node *src, Node *dst);
     void toSupporters(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> supporters, std::vector<Node*> transporters);
     void toAttackers(World *myWorld, std::vector<Node*> supporters, std::vector<Node*> attackers);
+    
+    void measureTactics(World *myWorld);
+    void attack(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> attackers);
 
 
 };
