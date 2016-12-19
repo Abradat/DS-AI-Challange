@@ -140,6 +140,7 @@ void AI::doTurn(World *world)
             }
              */
             attack(world, myNodes, attackers);
+
         }
     }
     if(map == 2)
@@ -338,22 +339,26 @@ void AI::toSupporters(World *myWorld, std::vector<Node*> myNodes, std::vector<No
     for(auto& transporter : transporters)
     {
         dijkstra(myNodes, supporters, transporter);
-        
+        min = INT_MAX;
+        aux = nullptr;
+        //std::cout<< transporter -> getArmyCount() << " : \n";
         for(auto& supporter : supporters)
         {
+            //std::cout<<supporter->getArmyCount() << " ";
             if(min > supporter -> dist)
             {
                 min = supporter -> dist;
                 aux = supporter;
             }
         }
-        printDijkstra(myNodes, transporter);
-        std::cout<<"\n";
+        //std::cout<<"\n\n";
+        //printDijkstra(myNodes, transporter);
+        //std::cout<<"\n";
         predictDijkstra(transporter, aux);
         //if(transporter ->getArmyCount() > 5)
         myWorld -> moveArmy(transporter, nextNode, transporter->getArmyCount() - 1);
     }
-    std::cout<<"\n\n\n\n###########\n";
+    //std::cout<<"\n\n\n\n###########\n";
 }
 
 void AI::toAttackers(World *myWorld, std::vector<Node*> supporters, std::vector<Node*> attackers)
@@ -382,10 +387,12 @@ void AI::measureTactics(World *myWorld)
 void AI::attack(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> attackers)
 {
     std::vector<Node*> neighbours;
+    Node *moveTarget;
     int selfPower, oppPower, oppCounts, suppPower, suppCount, attPower, attCount, freeCount;
     for(auto& attacker : attackers)
     {
         selfPower = 0, oppPower = 0, oppCounts = 0, suppPower = 0, suppCount = 0, attCount = 0, freeCount = 0;
+        moveTarget = nullptr;
         selfPower = measurePower(attacker -> getArmyCount());
         neighbours = attacker -> getNeighbours();
         for(auto& neighbour : neighbours)
@@ -394,15 +401,12 @@ void AI::attack(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> a
             {
                 oppPower += measurePower(neighbour -> getArmyCount());
                 oppCounts ++;
-                if(selfPower > oppPower)
-                    myWorld -> moveArmy(attacker, neighbour, attacker->getArmyCount() -1);
+                moveTarget = neighbour;
             }
             else if(neighbour -> getOwner() == myTeamId && neighbour -> role == 2)
             {
                 suppPower += measurePower(neighbour -> getArmyCount());
                 suppCount ++;
-                if(selfPower < oppPower)
-                    myWorld -> moveArmy(attacker, neighbour, attacker -> getArmyCount() - 1);
             }
             else if(neighbour -> getOwner() == myTeamId && neighbour -> role == 1)
             {
@@ -412,10 +416,12 @@ void AI::attack(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> a
             else if(neighbour -> getOwner() == -1)
             {
                 freeCount ++;
-                myWorld -> moveArmy(attacker, neighbour, attacker -> getArmyCount() - 1);
+                myWorld -> moveArmy(attacker, neighbour, attacker -> getArmyCount());
             }
-                
+            
         }
+        if(moveTarget != nullptr)
+            myWorld ->moveArmy(attacker, moveTarget, attacker -> getArmyCount());
     }
 }
 
