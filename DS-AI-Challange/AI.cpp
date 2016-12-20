@@ -44,13 +44,19 @@ void AI::doTurn(World *world)
         totalTurn = world -> getTotalTurns();
         tactics = 1;
         
+        graph = new int*[world -> getMap() -> getNodes().size()];
+        for(int cnt = 0; cnt < world -> getMap() -> getNodes().size(); cnt ++)
+            graph[cnt] = new int [world -> getMap() -> getNodes().size()];
+        
         init = false;
     }
     
     // Every Rounds Executeables Start
     myNodes = world -> getMyNodes();
     decRoles(myNodes);
+    updateGraph(world, graph);
     decAttackerStatus(attackers);
+    
     toSupporters(world, myNodes, supporters, transporters);
     toAttackers(world, supporters, attackers);
     
@@ -140,7 +146,6 @@ void AI::doTurn(World *world)
             }
              */
             attackStrategy(world, myNodes, attackers);
-
         }
     }
     if(map == 2)
@@ -306,6 +311,41 @@ void AI::dijkstra(std::vector<Node*> myNodes, Node *src)
     
 }
 
+void AI::dijkstra2(std::vector<Node*> nodes, Node *src)
+{
+    for(auto& node : nodes)
+        node -> dist = INT_MAX, node -> sptSet = false, node -> parent = nullptr;
+    
+    src -> dist = 0;
+    int min = INT_MAX;
+    Node *pickedNode = nullptr;
+    std::vector<Node*> neighbours;
+    for(auto& node : nodes)
+    {
+        min = INT_MAX;
+        for(auto& mNode : nodes)
+        {
+            if(!mNode -> sptSet)
+            {
+                if(min > mNode -> dist)
+                {
+                    min = mNode -> dist;
+                    pickedNode = mNode;
+                }
+            }
+        }
+        pickedNode -> sptSet = true;
+        neighbours = pickedNode -> getNeighbours();
+        for(auto& neighbour : neighbours)
+        {
+            if(!neighbour -> sptSet && pickedNode -> dist != INT_MAX && (pickedNode -> dist + 1 < neighbour -> dist))
+            {
+                neighbour -> dist = pickedNode -> dist + 1;
+                neighbour -> parent = pickedNode;
+            }
+        }
+    }
+}
 void AI::printDijkstra(std::vector<Node*> myNodes, Node *dst)
 {
     if( dst -> parent == nullptr )
@@ -336,6 +376,7 @@ void AI::toSupporters(World *myWorld, std::vector<Node*> myNodes, std::vector<No
 {
     int min = INT_MAX;
     Node *aux = nullptr;
+    nextNode = nullptr;
     for(auto& transporter : transporters)
     {
         dijkstra(myNodes, transporter);
@@ -386,12 +427,32 @@ void AI::measureTactics(World *myWorld)
 
 void AI::sort(std::vector<Node*> nodes, int procedure)
 {
-
+    Node *aux;
+    if(procedure == 1) // ascending
+    {
+        
+    }
+    else
+    {
+        for(int nodeCnt1 = 0; nodeCnt1 < nodes.size(); nodeCnt1++)
+        {
+            for(int nodeCnt2 = nodeCnt1 ; nodeCnt2 < nodes.size(); nodeCnt2++)
+            {
+                if(nodes[nodeCnt1] -> dist < nodes[nodeCnt2] -> dist)
+                {
+                    aux = nodes[nodeCnt1];
+                    nodes[nodeCnt1] = nodes[nodeCnt2];
+                    nodes[nodeCnt2] = aux;
+                }
+            }
+        }
+    }
 }
 void AI::attackStrategy(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> attackers)
 {
     std::vector<Node*> neighbours;
     std::vector<Node*> opps;
+    std::vector<Node*> allNodes;
     Node *aux;
     int selfPower, oppPower, oppCounts, suppPower, suppCount, attPower, attCount, freeCount;
     for(auto& attacker : attackers)
@@ -401,25 +462,81 @@ void AI::attackStrategy(World *myWorld, std::vector<Node*> myNodes, std::vector<
         selfPower = measurePower(attacker -> getArmyCount());
         neighbours = attacker -> getNeighbours();
         
+        allNodes = myWorld -> getMap() -> getNodes();
+        //opps.push_back(attacker);
+        dijkstra2(allNodes, attacker);
         opps = myWorld -> getOpponentNodes();
-        dijkstra(opps, attacker);
-        
         //sorting Start
-        for(int oppCnt1 = 0; oppCnt1 < opps.size(); oppCnt1 ++)
-        {
-            for(int oppCnt2 = oppCnt1; oppCnt2 < opps.size(); oppCnt2++)
-            {
-                if(opps[oppCnt1] -> dist > opps[oppCnt2] -> dist)
-                {
-                    aux = opps[oppCnt1];
-                    opps[oppCnt1] = opps[oppCnt2];
-                    opps[oppCnt2] = aux;
-                }
-            }
-        }
+        //sort(opps, 1);
+        std::cout<<"From " << attacker -> getArmyCount() << " : \n";
+        for(auto& opp: opps)
+            std::cout<<opp->dist << " ";
+        std::cout<<"\n\n#######\n\n\n";
         //sorting finish
         attacker -> oppNodes = opps;
+        getAttTarget(attacker);
+        predictDijkstra(attacker, attacker -> target);
+        myWorld -> moveArmy(attacker, nextNode , attacker -> getArmyCount());
+        
         
     }
 }
 
+void AI::getAttTarget(Node *src)
+{
+    int min = INT_MAX;
+    Node *target = nullptr;
+    for(auto& opp : src -> oppNodes)
+    {
+        if(min > opp -> dist)
+        {
+            target = opp;
+            min = opp -> dist;
+        }
+    }
+    src -> target = target;
+}
+
+void AI::getNextMove(World *myWorld, Node *src, Node *dst)
+{
+    
+}
+
+void AI::updateGraph(World *myWrold, int **myGraph)
+{
+    // for opp : -1 , free node : 1, att node : 2, supp node : 3, trans node : 4
+    std::vector<Node*> nodes = myWrold -> getMap() -> getNodes();
+    std::vector<Node*> neighbours;
+    
+    for(int cnt1 = 0; cnt1 < nodesSize; cnt1++)
+    {
+        for(int cnt2 = 0; cnt2 < nodesSize; cnt2++)
+            myGraph[cnt1][cnt2] = 0;
+    }
+    for(auto& node : nodes)
+    {
+        neighbours = node -> getNeighbours();
+        for(auto& neighbour : neighbours)
+        {
+            if(neighbour -> getOwner() == oppTeamId)
+                myGraph[node -> getIndex()][neighbour -> getIndex()] = -1;
+            else if( neighbour -> getOwner() == -1)
+                myGraph[node -> getIndex()][neighbour -> getIndex()] = 1;
+            else if( neighbour -> role == 1)
+                myGraph[node -> getIndex()][neighbour -> getIndex()] = 2;
+            else if( neighbour -> role == 2)
+                myGraph[node -> getIndex()][neighbour -> getIndex()] = 3;
+            else if(neighbour -> role == 3)
+                myGraph[node -> getIndex()][neighbour -> getIndex()] = 4;
+        }
+    }
+    
+    /*for (int cnt1 = 0; cnt1 < nodesSize; cnt1++)
+    {
+        for(int cnt2 =0; cnt2 < nodesSize; cnt2++)
+            std::cout<<myGraph[cnt1][cnt2] << " ";
+        std::cout<<"\n";
+    }
+    std::cout<<"\n";
+     */
+}

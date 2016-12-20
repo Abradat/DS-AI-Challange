@@ -42,6 +42,9 @@ private:
     std::vector<Node*> neighbours;
     std::vector<Node*> myNodes;
     
+    // Graph
+    int **graph;
+    
 public:
 	void doTurn(World *world);
     int measurePower(int armyCount);
@@ -50,6 +53,7 @@ public:
     void decRoles(std::vector<Node*> myNodes);
     void decAttackerStatus(std::vector<Node*> myAttackers);
     void dijkstra(std::vector<Node*> myNodes, Node *src);
+    void dijkstra2(std::vector<Node*> nodes, Node *src);
     void printDijkstra(std::vector<Node*> myNode, Node *dst);
     void predictDijkstra(Node *src, Node *dst);
     void toSupporters(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> supporters, std::vector<Node*> transporters);
@@ -58,6 +62,11 @@ public:
     void sort(std::vector<Node*> nodes, int procedure);
     void measureTactics(World *myWorld);
     void attackStrategy(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> attackers);
+    
+    void getNextMove(World *myWorld, Node *src, Node *dst);
+    void getAttTarget(Node *src);
+    
+    void updateGraph(World *myWorld, int **myGraph);
 
 
 };
