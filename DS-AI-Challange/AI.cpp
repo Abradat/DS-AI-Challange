@@ -6,13 +6,66 @@
 #include "Warshall.hpp"
 #include "BfsNode.hpp"
 #include "NodeList.hpp"
+#include <queue>
 
-
-bool AI::BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> path)
+bool AI::BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> *path)
 {
     std::vector<Node*> allNodes = myWorld -> getMap() -> getNodes();
     int nSize = allNodes.size();
+    std::queue<int> q;
+
     
+    BFS_NODE **nodes = new BFS_NODE*[nSize];
+    for(int i = 0; i < nSize; i++)
+        nodes[i] = new BFS_NODE();
+    
+    nodes[dst -> getIndex()] -> distance = 0;
+    nodes[dst -> getIndex()] -> parent = dst -> getIndex();
+    q.push(dst -> getIndex());
+    
+    Node *from;
+    bool found  = false;
+    
+    while(q.size()!= 0)
+    {
+        int front = q.front();
+        q.pop();
+        from = allNodes[ front];
+        
+        std::vector<Node*> neighbours = from -> getNeighbours();
+        for(auto& neighbour : neighbours)
+        {
+            if(nodes[neighbour -> getIndex()] -> distance != INT_MAX)
+                continue;
+            if(start -> getIndex() == neighbour ->getIndex())
+                found = true;
+            nodes[neighbour -> getIndex()] -> distance = nodes[from -> getIndex()] -> distance + 1;
+            nodes[neighbour -> getIndex()] -> parent = from -> getIndex();
+            q.push(neighbour -> getIndex());
+        }
+        if(found)
+            break;
+        
+    }
+    if(!found)
+        return false;
+    from = start;
+    do
+    {
+        path -> push_back(allNodes[from -> getIndex()] -> parent);
+        from = path -> at(path -> size() - 1);
+    }while(dst -> getIndex() != from -> getIndex());
+    
+    return true;
+}
+
+void AI::getNodesIndexbyRole(int role, std::vector<int> *nodesIndex)
+{
+    for(int i = 0; i < size; i++)
+    {
+        if(NodeList[i] -> role == role)
+            nodesIndex -> push_back(i);
+    }
 }
 
 void AI::doTurn(World *world)
@@ -63,9 +116,9 @@ void AI::doTurn(World *world)
         
         warshall = new Warshall(world);
         size = world -> getMap() -> getNodes().size();
-        NodeList = new NODE_LIST[size];
+        NodeList = new NODE_LIST*[size];
         for(int  i = 0; i < size; i++)
-            NodeList[i] = *new NODE_LIST();
+            NodeList[i] = new NODE_LIST();
         
         init = false;
     }

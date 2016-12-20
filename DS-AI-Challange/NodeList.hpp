@@ -16,7 +16,7 @@ class NODE_LIST
 {
 public:
     Node *node; // contains index
-    int type;
+    int role;
     std::vector<int> q;
     bool underAttack;
     

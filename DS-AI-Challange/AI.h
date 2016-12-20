@@ -59,7 +59,7 @@ private:
     
     // -------------------------------- GlOBAL VARIABLES HERE
     Warshall *warshall;
-    NODE_LIST *NodeList;
+    NODE_LIST **NodeList;
     unsigned long int size; // or N = number of nodes
     // -------------------------------------------------------
     
@@ -78,8 +78,8 @@ private:
 public:
     void doTurn(World *world);
     
-    bool BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> path);
-    
+    bool BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> *path);
+    void getNodesIndexbyRole(int role, std::vector<int> *nodesIndex);
     
     
     
