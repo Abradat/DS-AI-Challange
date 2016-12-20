@@ -47,7 +47,7 @@ public:
 
     void setIndex(int index);
     
-    int role = 0; // 1 : attacker, 2: support, 3: transporter
+    int role = 0; // 0 : support, 1: attack, 2: free, 3: enemy
     int status = 0; // for attackers - > 1 : conquare and attack, 2: attack, 3: conquare
     int dist;
     bool sptSet;

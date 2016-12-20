@@ -34,13 +34,35 @@ private:
     Node *nextNode;
     Node *an;
     
+    // -------------------------------- OUR CONSTANTS
+    int DEFAULT_FRONT_MIN = 5;
+    int DEFAULT_RESOURCE_MIN = 1;
+    int CLOSE_ENEMY_FL_RM_MIN = 15; // How close is FL to the enemy (MIN)
+    int CLOSE_ENEMY_FL_RM_AVG = 2; 	// How close is FL to the enemy (AVG)
+    int EMPTINESS_FL_RM  = 3; 		// How empty is the FL
+    int RESOURCE_THRESHOLD = 1;
+    
+    //-------------------- rating attacking nodes
+    int VERTEX_DEGREE = 1;
+    int ENEMY_NEIGHBOUR = 6;
+    int ENEMY_POWER = 5;	// How is the difference between power of us and destination enemy
+    int UNDER_ATTACK = 2;	//	destination is under attack by another monster
+    int DISTANCE_TO_OUR_UNIT = 1; // nearness to our units
+    int MAX_DISTANCE_TO_FRIEND = 7; // maximum distance to our friends
+    int NOT_ATTACK_ENEMY = 20;
+    double ENEMY_REMAIN = 0.02;	// point based on number of enemy that cannot flee
+    double ENEMY_EXISTENCE = 0.02;
+    double REMAIN_UNITS = 0.2;	// remain units
+     //////////////////////////////////////////
+    
     //calibration
     
     std::vector<Node*> supporters;
-    std::vector<Node*> transporters;
+    //std::vector<Node*> transporters;
     std::vector<Node*> attackers;
     std::vector<Node*> neighbours;
     std::vector<Node*> myNodes;
+    std::vector<Node*> totalNodes;
     
     // Graph
     int **graph;
@@ -50,7 +72,7 @@ public:
     int measurePower(int armyCount);
     int changeTactics(std::vector<Node*> myNodes);
     int getTactics();
-    void decRoles(std::vector<Node*> myNodes);
+    void decRoles(std::vector<Node*> myNodes, std::vector<Node*> totalNodes);
     void decAttackerStatus(std::vector<Node*> myAttackers);
     void dijkstra(std::vector<Node*> myNodes, Node *src);
     void dijkstra2(std::vector<Node*> nodes, Node *src);

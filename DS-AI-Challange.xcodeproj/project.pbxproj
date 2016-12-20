@@ -27,6 +27,9 @@
 		3ACAE7F71DFEF67900DDA7FA /* Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAE7DC1DFEF67900DDA7FA /* Queue.cpp */; };
 		3ACAE7F81DFEF67900DDA7FA /* SubPacket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAE7DF1DFEF67900DDA7FA /* SubPacket.cpp */; };
 		3ACAE7F91DFEF67900DDA7FA /* World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3ACAE7E31DFEF67900DDA7FA /* World.cpp */; };
+		3AF40F1D1E094CCB00B7D8D0 /* Warshall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AF40F1B1E094CCB00B7D8D0 /* Warshall.cpp */; };
+		3AF40F231E0956A800B7D8D0 /* NodeList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AF40F211E0956A800B7D8D0 /* NodeList.cpp */; };
+		3AF40F261E0956D200B7D8D0 /* BfsNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AF40F241E0956D200B7D8D0 /* BfsNode.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -91,6 +94,12 @@
 		3ACAE7E31DFEF67900DDA7FA /* World.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = World.cpp; sourceTree = "<group>"; };
 		3ACAE7E41DFEF67900DDA7FA /* World.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = World.h; sourceTree = "<group>"; };
 		3ACAE7E51DFEF67900DDA7FA /* writer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = writer.h; sourceTree = "<group>"; };
+		3AF40F1B1E094CCB00B7D8D0 /* Warshall.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Warshall.cpp; sourceTree = "<group>"; };
+		3AF40F1C1E094CCB00B7D8D0 /* Warshall.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Warshall.hpp; sourceTree = "<group>"; };
+		3AF40F211E0956A800B7D8D0 /* NodeList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NodeList.cpp; sourceTree = "<group>"; };
+		3AF40F221E0956A800B7D8D0 /* NodeList.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NodeList.hpp; sourceTree = "<group>"; };
+		3AF40F241E0956D200B7D8D0 /* BfsNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BfsNode.cpp; sourceTree = "<group>"; };
+		3AF40F251E0956D200B7D8D0 /* BfsNode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BfsNode.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +134,12 @@
 			children = (
 				3ACAE7B61DFEF67900DDA7FA /* AI.cpp */,
 				3ACAE7B71DFEF67900DDA7FA /* AI.h */,
+				3AF40F1B1E094CCB00B7D8D0 /* Warshall.cpp */,
+				3AF40F1C1E094CCB00B7D8D0 /* Warshall.hpp */,
+				3AF40F241E0956D200B7D8D0 /* BfsNode.cpp */,
+				3AF40F251E0956D200B7D8D0 /* BfsNode.hpp */,
+				3AF40F211E0956A800B7D8D0 /* NodeList.cpp */,
+				3AF40F221E0956A800B7D8D0 /* NodeList.hpp */,
 				3ACAE7B81DFEF67900DDA7FA /* autolink.h */,
 				3ACAE7B91DFEF67900DDA7FA /* config.h */,
 				3ACAE7BA1DFEF67900DDA7FA /* Constants.cpp */,
@@ -242,8 +257,10 @@
 				3ACAE7F91DFEF67900DDA7FA /* World.cpp in Sources */,
 				3ACAE7EA1DFEF67900DDA7FA /* EventHandler.cpp in Sources */,
 				3ACAE7F61DFEF67900DDA7FA /* Parser.cpp in Sources */,
+				3AF40F231E0956A800B7D8D0 /* NodeList.cpp in Sources */,
 				3ACAE7E91DFEF67900DDA7FA /* Event.cpp in Sources */,
 				3ACAE7E61DFEF67900DDA7FA /* AI.cpp in Sources */,
+				3AF40F1D1E094CCB00B7D8D0 /* Warshall.cpp in Sources */,
 				3ACAE7ED1DFEF67900DDA7FA /* Graph.cpp in Sources */,
 				3ACAE7EB1DFEF67900DDA7FA /* Game.cpp in Sources */,
 				3ACAE7F81DFEF67900DDA7FA /* SubPacket.cpp in Sources */,
@@ -252,6 +269,7 @@
 				3ACAE7E81DFEF67900DDA7FA /* Controller.cpp in Sources */,
 				3ACAE7F41DFEF67900DDA7FA /* Network.cpp in Sources */,
 				3ACAE7E71DFEF67900DDA7FA /* Constants.cpp in Sources */,
+				3AF40F261E0956D200B7D8D0 /* BfsNode.cpp in Sources */,
 				3ACAE7F51DFEF67900DDA7FA /* Node.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

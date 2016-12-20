@@ -52,12 +52,15 @@ void AI::doTurn(World *world)
     }
     
     // Every Rounds Executeables Start
-    myNodes = world -> getMyNodes();
-    decRoles(myNodes);
-    updateGraph(world, graph);
-    decAttackerStatus(attackers);
     
-    toSupporters(world, myNodes, supporters, transporters);
+    myNodes = world -> getMyNodes();
+    totalNodes = world -> getMap() -> getNodes();
+    decRoles(myNodes, totalNodes);
+    decAttackerStatus(attackers);
+    updateGraph(world, graph);
+    
+    //toSupporters(world, myNodes, supporters, transporters);
+    
     toAttackers(world, supporters, attackers);
     
     //for(auto& test: myNodes)
@@ -116,7 +119,9 @@ void AI::doTurn(World *world)
      */
     //Debugging Prints Finish
     
-    
+    std::cout<< attackers.size() << " attackers"<<std::endl;
+    std::cout<< supporters.size() << " supporters" <<std::endl;
+    //std::cout<< transporters.size() << " transporters"<< std::endl;
     if(map == 1)
     {
         if(tactics == 1)
@@ -197,11 +202,11 @@ int AI::measurePower(int armyCount)
         return 0;
 }
 
-void AI::decRoles(std::vector<Node*> myNodes)
+void AI::decRoles(std::vector<Node*> myNodes, std::vector<Node*> totalNodes)
 {
     attackers.clear();
     supporters.clear();
-    transporters.clear();
+    //transporters.clear();
     std::vector<Node*> neighbours;
     
     for(auto& myNode : myNodes)
@@ -221,6 +226,7 @@ void AI::decRoles(std::vector<Node*> myNodes)
         }
     }
     neighbours.clear();
+    /*
     for(auto &mySupporter : attackers)
     {
         neighbours = mySupporter -> getNeighbours();
@@ -243,6 +249,24 @@ void AI::decRoles(std::vector<Node*> myNodes)
         }
     }
     neighbours.clear();
+     */
+    for(auto& mySupporter : myNodes)
+    {
+        if(mySupporter -> role != 1)
+        {
+            mySupporter -> role = 2;
+            supporters.push_back(mySupporter);
+        }
+        
+    }
+    
+    for(auto& node : totalNodes)
+    {
+        if(node -> getOwner() == -1)
+            node -> role = 2;
+        else if( node -> getOwner() == oppTeamId)
+            node -> role = 3;
+    }
     
 }
 
@@ -346,6 +370,7 @@ void AI::dijkstra2(std::vector<Node*> nodes, Node *src)
         }
     }
 }
+
 void AI::printDijkstra(std::vector<Node*> myNodes, Node *dst)
 {
     if( dst -> parent == nullptr )
@@ -448,6 +473,7 @@ void AI::sort(std::vector<Node*> nodes, int procedure)
         }
     }
 }
+
 void AI::attackStrategy(World *myWorld, std::vector<Node*> myNodes, std::vector<Node*> attackers)
 {
     std::vector<Node*> neighbours;
