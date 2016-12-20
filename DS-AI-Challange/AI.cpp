@@ -3,8 +3,17 @@
 #include <vector>
 #include <cstdlib>
 #include <iostream>
+#include "Warshall.hpp"
+#include "BfsNode.hpp"
+#include "NodeList.hpp"
 
 
+bool AI::BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> path)
+{
+    std::vector<Node*> allNodes = myWorld -> getMap() -> getNodes();
+    int nSize = allNodes.size();
+    
+}
 
 void AI::doTurn(World *world)
 {
@@ -12,6 +21,7 @@ void AI::doTurn(World *world)
     
     if(init)
     {
+        /*
         //std::cout<<INT_MAX<<std::endl;
         myNodes = world -> getMyNodes();
         //attackers = world ->getMyNodes();
@@ -47,6 +57,15 @@ void AI::doTurn(World *world)
         graph = new int*[world -> getMap() -> getNodes().size()];
         for(int cnt = 0; cnt < world -> getMap() -> getNodes().size(); cnt ++)
             graph[cnt] = new int [world -> getMap() -> getNodes().size()];
+        */
+        
+        
+        
+        warshall = new Warshall(world);
+        size = world -> getMap() -> getNodes().size();
+        NodeList = new NODE_LIST[size];
+        for(int  i = 0; i < size; i++)
+            NodeList[i] = *new NODE_LIST();
         
         init = false;
     }

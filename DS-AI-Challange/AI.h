@@ -3,6 +3,9 @@
 
 #include "Node.h"
 #include "World.h"
+#include "Warshall.hpp"
+#include "BfsNode.hpp"
+#include "NodeList.hpp"
 
 /**
  * AI class.
@@ -53,7 +56,12 @@ private:
     double ENEMY_REMAIN = 0.02;	// point based on number of enemy that cannot flee
     double ENEMY_EXISTENCE = 0.02;
     double REMAIN_UNITS = 0.2;	// remain units
-     //////////////////////////////////////////
+    
+    // -------------------------------- GlOBAL VARIABLES HERE
+    Warshall *warshall;
+    NODE_LIST *NodeList;
+    unsigned long int size; // or N = number of nodes
+    // -------------------------------------------------------
     
     //calibration
     
@@ -68,7 +76,18 @@ private:
     int **graph;
     
 public:
-	void doTurn(World *world);
+    void doTurn(World *world);
+    
+    bool BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> path);
+    
+    
+    
+    
+    
+    
+    
+    
+    
     int measurePower(int armyCount);
     int changeTactics(std::vector<Node*> myNodes);
     int getTactics();
