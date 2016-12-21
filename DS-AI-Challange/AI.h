@@ -38,12 +38,12 @@ private:
     Node *an;
     
     // -------------------------------- OUR CONSTANTS
-    int DEFAULT_FRONT_MIN = 5;
-    int DEFAULT_RESOURCE_MIN = 1;
-    int CLOSE_ENEMY_FL_RM_MIN = 15; // How close is FL to the enemy (MIN)
-    int CLOSE_ENEMY_FL_RM_AVG = 2; 	// How close is FL to the enemy (AVG)
-    int EMPTINESS_FL_RM  = 3; 		// How empty is the FL
-    int RESOURCE_THRESHOLD = 1;
+    int DEFAULT_ATTACKER_MIN = 5;
+    int DEFAULT_SUPPORTER_MIN = 1;
+    int CLOSE_ENEMY_ATT_SUPP_MIN = 15; // How close is FL to the enemy (MIN)
+    int CLOSE_ENEMY_ATT_SUPP_AVG = 2; 	// How close is FL to the enemy (AVG)
+    int EMPTINESS_ATT_SUPP  = 3; 		// How empty is the FL
+    int SUPP_THRESHOLD = 1;
     
     //-------------------- rating attacking nodes
     int VERTEX_DEGREE = 1;
@@ -66,8 +66,10 @@ private:
     //calibration
     
     std::vector<Node*> supporters;
+    std::vector<Node*> newSupporters;
     //std::vector<Node*> transporters;
     std::vector<Node*> attackers;
+    std::vector<Node*> newAttackers;
     std::vector<Node*> neighbours;
     std::vector<Node*> myNodes;
     std::vector<Node*> totalNodes;
@@ -78,9 +80,20 @@ private:
 public:
     void doTurn(World *world);
     
-    bool BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> *path);
+    bool BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> path);
     void getNodesIndexbyRole(int role, std::vector<int> *nodesIndex);
-    
+    bool isAttackerOnFreePath(Node *attacker);
+    int toAttackerPoint(World *myWorld, int nodeIndex, std::vector<Node*> enemies);
+    int attackerDecisions(Node *attacker);
+    bool RelativeNeighbour(Node *myNode);
+    void sortNodes(std::vector<Node*> Nodes, int ascending);
+    int getMaxMinIndex(int myArray[], int situation); // situation ->  1 : max , 2 : min
+    int getEnemyPower(Node *enemy);
+    bool isPathFree(Node *node, int role);
+    int pathToRelative(Node *src, Node *node);
+    int Score(Node *src, Node *dst);
+    void supportStrategy();
+    void attackStrategy2();
     
     
     
@@ -91,7 +104,7 @@ public:
     int measurePower(int armyCount);
     int changeTactics(std::vector<Node*> myNodes);
     int getTactics();
-    void decRoles(std::vector<Node*> myNodes, std::vector<Node*> totalNodes);
+    void decRoles(World *myWorld);
     void decAttackerStatus(std::vector<Node*> myAttackers);
     void dijkstra(std::vector<Node*> myNodes, Node *src);
     void dijkstra2(std::vector<Node*> nodes, Node *src);

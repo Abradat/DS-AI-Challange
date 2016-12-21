@@ -8,7 +8,7 @@
 #include "NodeList.hpp"
 #include <queue>
 
-bool AI::BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> *path)
+bool AI::BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> path)
 {
     std::vector<Node*> allNodes = myWorld -> getMap() -> getNodes();
     int nSize = allNodes.size();
@@ -30,7 +30,7 @@ bool AI::BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> *path)
     {
         int front = q.front();
         q.pop();
-        from = allNodes[ front];
+        from = allNodes[front];
         
         std::vector<Node*> neighbours = from -> getNeighbours();
         for(auto& neighbour : neighbours)
@@ -52,8 +52,8 @@ bool AI::BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> *path)
     from = start;
     do
     {
-        path -> push_back(allNodes[from -> getIndex()] -> parent);
-        from = path -> at(path -> size() - 1);
+        path.push_back(allNodes[from -> getIndex()] -> parent);
+        from = path.at(path.size() - 1);
     }while(dst -> getIndex() != from -> getIndex());
     
     return true;
@@ -63,10 +63,45 @@ void AI::getNodesIndexbyRole(int role, std::vector<int> *nodesIndex)
 {
     for(int i = 0; i < size; i++)
     {
-        if(NodeList[i] -> role == role)
+        if(totalNodes[i] -> role == role)
             nodesIndex -> push_back(i);
     }
 }
+
+bool AI::isAttackerOnFreePath(Node *attacker)
+{
+    std::vector<Node*> neighbours;
+    if(attackerDecisions(attacker) <= 1)
+    {
+        for(auto& neighbour : neighbours)
+        {
+            if(neighbour -> role == 3 && isPathFree(neighbour, myTeamId))
+                return true;
+        }
+    }
+    return false;
+}
+
+int AI::toAttackerPoint(World *myWorld, int nodeIndex, std::vector<Node*> enemies)
+{
+    int point = 500;
+    Node *attacker = myWorld -> getMap() -> getNode(nodeIndex);
+    
+    if(isAttackerOnFreePath(attacker))
+        point -= 1000;
+    
+    int avgDist = warshall -> avgDistanceList(attacker, enemies);
+    int minDist = warshall -> minDistanceFrom(attacker, enemies);
+    int req = attacker -> getArmyCount();
+    
+    point -= avgDist * CLOSE_ENEMY_ATT_SUPP_AVG;
+    point -= minDist * CLOSE_ENEMY_ATT_SUPP_MIN;
+    point -= req * EMPTINESS_ATT_SUPP;
+    
+    return point;
+    
+}
+
 
 void AI::doTurn(World *world)
 {
@@ -127,7 +162,7 @@ void AI::doTurn(World *world)
     
     myNodes = world -> getMyNodes();
     totalNodes = world -> getMap() -> getNodes();
-    decRoles(myNodes, totalNodes);
+    //decRoles(myNodes, totalNodes);
     decAttackerStatus(attackers);
     updateGraph(world, graph);
     
@@ -274,13 +309,52 @@ int AI::measurePower(int armyCount)
         return 0;
 }
 
-void AI::decRoles(std::vector<Node*> myNodes, std::vector<Node*> totalNodes)
+void AI::decRoles(World *myWorld)
 {
     attackers.clear();
     supporters.clear();
-    //transporters.clear();
+    newAttackers.clear();
+    newSupporters.clear();
     std::vector<Node*> neighbours;
+    bool flag;
     
+    myNodes = myWorld -> getMyNodes();
+    totalNodes = myWorld -> getMap() -> getNodes();
+    
+    
+    for(auto& node : totalNodes)
+    {
+        if(node -> getOwner() == -1)
+            node -> role = 3;
+        else if(node -> getOwner() == oppTeamId)
+            node -> role = 4;
+        else
+        {
+            flag = true; // assumes the node is support
+            neighbours = node -> getNeighbours();
+            for(auto& neighbour : neighbours)
+            {
+                if(neighbour -> getOwner() != myTeamId)
+                {
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag)
+                node -> role = 1;
+            else
+                node -> role = 2;
+        }
+        
+        if(node -> role == 1)
+            supporters.push_back(node);
+        else if(node -> role == 2)
+            attackers.push_back(node);
+        
+        
+    }
+    //transporters.clear();
+    /*
     for(auto& myNode : myNodes)
         myNode -> role = 0;
     
@@ -297,7 +371,8 @@ void AI::decRoles(std::vector<Node*> myNodes, std::vector<Node*> totalNodes)
             }
         }
     }
-    neighbours.clear();
+    */
+    //neighbours.clear();
     /*
     for(auto &mySupporter : attackers)
     {
@@ -322,6 +397,7 @@ void AI::decRoles(std::vector<Node*> myNodes, std::vector<Node*> totalNodes)
     }
     neighbours.clear();
      */
+    /*
     for(auto& mySupporter : myNodes)
     {
         if(mySupporter -> role != 1)
@@ -339,6 +415,8 @@ void AI::decRoles(std::vector<Node*> myNodes, std::vector<Node*> totalNodes)
         else if( node -> getOwner() == oppTeamId)
             node -> role = 3;
     }
+     */
+    
     
 }
 
