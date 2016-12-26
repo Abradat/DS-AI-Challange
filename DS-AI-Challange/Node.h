@@ -57,6 +57,13 @@ public:
     std::vector<Node*> freeNodes;
     std::vector<Node*> oppNodes;
     std::vector<Node*> suppNodes;
+    
+    std::vector<int> q;
+    bool underAttack;
+    
+    int circulateQueuePoll();
+    void myMerge(std::vector<int>newF);
+    
 
 };
 

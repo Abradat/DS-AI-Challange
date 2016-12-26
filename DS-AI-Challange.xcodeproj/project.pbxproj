@@ -367,6 +367,7 @@
 		3ACAE7B41DFEF63600DDA7FA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				DEVELOPMENT_TEAM = DSF2H79A66;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -375,6 +376,7 @@
 		3ACAE7B51DFEF63600DDA7FA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				DEVELOPMENT_TEAM = DSF2H79A66;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

@@ -82,17 +82,17 @@ public:
     
     bool BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> path);
     void getNodesIndexbyRole(int role, std::vector<int> *nodesIndex);
-    bool isAttackerOnFreePath(Node *attacker);
+    bool isAttackerOnFreePath(World *myWorld, Node *attacker);
     int toAttackerPoint(World *myWorld, int nodeIndex, std::vector<Node*> enemies);
     int attackerDecisions(Node *attacker);
-    bool RelativeNeighbour(Node *myNode);
-    void sortNodes(std::vector<Node*> Nodes, int ascending);
-    int getMaxMinIndex(int myArray[], int situation); // situation ->  1 : max , 2 : min
+    bool relativeNeighbour(Node *myNode);
+    void sortNodes(std::vector<Node*> Nodes, bool ascending); //check
+    int getMaxMinIndex(std::vector<int> myVec, int situation); // situation ->  1 : max , 2 : min
     int getEnemyPower(Node *enemy);
-    bool isPathFree(Node *node, int role);
+    bool isPathFree(World *myWorld, Node *node, int role);
     int pathToRelative(Node *src, Node *node);
     int Score(Node *src, Node *dst);
-    void supportStrategy();
+    void supportStrategy(World *myWorld); // check
     void attackStrategy2();
     
     
