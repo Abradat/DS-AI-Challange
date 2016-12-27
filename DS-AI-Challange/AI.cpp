@@ -660,6 +660,34 @@ void AI::decRoles(World *myWorld)
         
         
     }
+    
+    for(auto& attacker : attackers)
+    {
+        if(!isAttackerOnFreePath(myWorld, attacker))
+            newAttackers.push_back(attacker);
+        
+    }
+    
+    attackers.clear();
+    for(auto& newAttacker : newAttackers)
+        attackers.push_back(newAttacker);
+    
+    for(auto& supporter : supporters)
+    {
+        int minF = warshall -> minDistanceFrom(supporter, attackers);
+        if(minF < SUPP_THRESHOLD)
+            minF = SUPP_THRESHOLD;
+        
+        std::vector<int>newQ;
+        for(auto& attacker : attackers)
+        {
+            if(warshall -> D[supporter -> getIndex()][attacker -> getIndex()] <= minF)
+                newQ.push_back(attacker -> getIndex());
+            supporter -> myMerge(newQ);
+        }
+        
+    }
+    
     //transporters.clear();
     /*
     for(auto& myNode : myNodes)
