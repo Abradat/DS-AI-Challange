@@ -93,7 +93,7 @@ public:
     int pathToRelative(Node *src, Node *node);
     int Score(Node *src, Node *dst);
     void supportStrategy(World *myWorld); // check
-    void attackStrategy2();
+    void attackStrategy2(World *myWorld);
     
     
     

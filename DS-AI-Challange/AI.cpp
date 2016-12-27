@@ -173,7 +173,10 @@ int AI::getMaxMinIndex(std::vector<int> myVec, int situation)
 
 bool AI::isPathFree(World *myWorld, Node *node, int role)
 {
-    bool *marker = new bool[nodesSize];
+    //bool *marker = new bool[nodesSize];
+    bool marker[nodesSize];
+    for(int cnt = 0; cnt < nodesSize; cnt++)
+        marker[cnt] = false;
     marker[node -> getIndex()] = true;
     std::queue<int> myQ;
     myQ.push(node -> getIndex());
@@ -293,7 +296,86 @@ void AI::supportStrategy(World *myWorld)
     std::vector<Node*> enemy;
     for(int cnt = 0; cnt < enemyIx.size(); cnt++)
         enemy.push_back(myWorld -> getMap() -> getNode(enemyIx[cnt])); // check
+    
+    
+    
+    //for(std::vector<int>::iterator supp = suppList.begin(); supp != suppList.end(); supp++)
+    //{
+    //    D2F = warshall -> D[myWorld -> getMap() -> getNode(supp) -> q[0]][]
+    //}
+    for(int cnt = 0; cnt < suppList.size(); cnt++)
+    {
+        int D2F = warshall -> D[myWorld -> getMap() -> getNode(suppList[cnt]) -> q[0]][suppList[cnt]];
+        if(D2F <= SUPP_THRESHOLD)
+        {
+            //int *priority = new int[myWorld -> getMap() -> getNode(suppList[cnt]) -> q.size()];
+            std::vector<int> priority;
+            for(int cnt2 = 0; cnt2 < myWorld -> getMap() -> getNode(suppList[cnt]) -> q.size(); cnt2++)
+                priority.push_back(toAttackerPoint(myWorld, myWorld -> getMap() -> getNode(suppList[cnt]) -> q[cnt2], enemy));
+            
+            int maxIdx = getMaxMinIndex(priority, 1); // check
+            int dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> q[maxIdx];
+            int countVal = myWorld -> getMap() -> getNode(suppList[cnt]) -> getArmyCount();
+            myWorld -> moveArmy(suppList[cnt], warshall -> isNextHop(myWorld -> getMap() -> getNode(suppList[cnt]),
+                                                                     myWorld -> getMap() -> getNode(suppList[dst])), countVal);
+        }
+        
+        else
+        {
+            int countVal = myWorld -> getMap() -> getNode(suppList[cnt]) -> getArmyCount();
+            int dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> circulateQueuePoll();
+            if(isAttackerOnFreePath(myWorld, myWorld -> getMap() -> getNode(suppList[dst])))
+                dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> circulateQueuePoll();
+            myWorld -> moveArmy(suppList[cnt], warshall -> isNextHop(myWorld -> getMap() -> getNode(suppList[cnt]),
+                                                                     myWorld -> getMap() -> getNode(suppList[dst])), countVal);
+        }
+    }
 }
+
+void AI::attackStrategy2(World *myWorld)
+{
+    std::vector<int> attList;
+    getNodesIndexbyRole(2, &attList);
+    std::vector<Node*> neighbours;
+    for(int cnt = 0; cnt < attList.size(); cnt++)
+    {
+        Node *source = myWorld -> getMap() -> getNode(attList[cnt]);
+        neighbours = source -> getNeighbours();
+        Node *finalDst = nullptr;
+        int max = 0, hasEnemy =0;
+        for(auto& neighbour : neighbours)
+        {
+            if(neighbour -> role > 2)
+            {
+                if(max < Score(source, neighbour))
+                {
+                    max = Score(source, neighbour);
+                    finalDst = neighbour;
+                }
+            }
+            if(neighbour -> role == 4)
+                hasEnemy++;
+        }
+        
+        if(finalDst == nullptr)
+            continue;
+        int armyCount = 0;
+        if(isPathFree(myWorld, finalDst, myTeamId))
+            armyCount = 1;
+        else
+        {
+            armyCount = source -> getArmyCount();
+            armyCount -= hasEnemy * armyCount * ENEMY_EXISTENCE;
+            
+            if(armyCount > 50)
+                armyCount -= armyCount * REMAIN_UNITS;
+        }
+        
+        myWorld -> moveArmy(source, finalDst, armyCount);
+        finalDst -> underAttack = true;
+    }
+}
+
 void AI::doTurn(World *world)
 {
     srand(time(NULL));
@@ -349,17 +431,26 @@ void AI::doTurn(World *world)
         init = false;
     }
     
+    try{
+    decRoles(world);
+    supportStrategy(world);
+    attackStrategy2(world);
+    }
+    catch(std::exception e)
+    {
+        
+    }
     // Every Rounds Executeables Start
     
-    myNodes = world -> getMyNodes();
+    /*myNodes = world -> getMyNodes();
     totalNodes = world -> getMap() -> getNodes();
     //decRoles(myNodes, totalNodes);
     decAttackerStatus(attackers);
     updateGraph(world, graph);
-    
+    */
     //toSupporters(world, myNodes, supporters, transporters);
     
-    toAttackers(world, supporters, attackers);
+    //toAttackers(world, supporters, attackers);
     
     //for(auto& test: myNodes)
     //{
@@ -417,14 +508,14 @@ void AI::doTurn(World *world)
      */
     //Debugging Prints Finish
     
-    std::cout<< attackers.size() << " attackers"<<std::endl;
-    std::cout<< supporters.size() << " supporters" <<std::endl;
+    //std::cout<< attackers.size() << " attackers"<<std::endl;
+    //std::cout<< supporters.size() << " supporters" <<std::endl;
     //std::cout<< transporters.size() << " transporters"<< std::endl;
-    if(map == 1)
-    {
-        if(tactics == 1)
-        {
-            attackers = world -> getMyNodes();
+    //if(map == 1)
+    //{
+    //    if(tactics == 1)
+    //    {
+    //        attackers = world -> getMyNodes();
             /*for(auto& attacker : attackers)
             {
                 int attackerPower = attacker -> getArmyCount();
@@ -448,10 +539,10 @@ void AI::doTurn(World *world)
                 }
             }
              */
-            attackStrategy(world, myNodes, attackers);
-        }
-    }
-    if(map == 2)
+      //      attackStrategy(world, myNodes, attackers);
+      //  }
+    //}
+    /*if(map == 2)
     {
         if(tactics == 1)
         {
@@ -480,6 +571,7 @@ void AI::doTurn(World *world)
             }
         }
     }
+     */
     /*for(auto& myNode: myNodes)
     {
         std::cout<<myNode->getIndex() << " : " << myNode->getArmyCount()<<std::endl;
