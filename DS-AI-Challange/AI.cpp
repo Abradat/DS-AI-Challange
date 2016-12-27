@@ -288,6 +288,10 @@ void AI::supportStrategy(World *myWorld)
 {
     std::vector<int> suppList;
     getNodesIndexbyRole(1, &suppList);
+    //for (int an = 0; an < suppList.size(); an++)
+    //    std::cout << suppList << " ";
+    
+    std::cout << suppList.size()<<"\n\n";
     if(suppList.size() <= 0)
         return;
     
@@ -421,6 +425,22 @@ void AI::doTurn(World *world)
         */
         
         
+        myTeamId = world -> getMyId();
+        
+        if(myTeamId == 1)
+            oppTeamId = 0;
+        else
+            oppTeamId = 1;
+        
+        escapeConst = world -> getEscapeConstant();
+        nodeBounsConst = world -> getNodeBonusConstant();
+        edgeBounsConst = world -> getEdgeBonusConstant();
+        lArmyMaxConst = world -> getLowArmyBound();
+        mArmyMaxConst = world -> getMediumArmyBound();
+        lCasConst = world -> getLowCasualtyCoefficient();
+        mCasConst = world -> getMediumCasualtyCoefficient();
+        nodesSize = world -> getMap() -> getNodes().size();
+        
         
         warshall = new Warshall(world);
         size = world -> getMap() -> getNodes().size();
@@ -432,6 +452,10 @@ void AI::doTurn(World *world)
     }
     
     try{
+    
+        for(auto& goh : totalNodes)
+            std::cout<<goh -> role << " ";
+        std::cout<<"\n\n";
     decRoles(world);
     supportStrategy(world);
     attackStrategy2(world);
