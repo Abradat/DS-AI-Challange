@@ -12,6 +12,7 @@ Node::Node(int index) {
 	this->index = index;
 	this->owner = -1;
 	this->armyCount = 0;
+    this->underAttack = false;
 }
 
 Node::~Node() {

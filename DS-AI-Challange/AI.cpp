@@ -66,6 +66,7 @@ void AI::getNodesIndexbyRole(int role, std::vector<int> *nodesIndex)
         if(totalNodes[i] -> role == role)
             nodesIndex -> push_back(i);
     }
+    std::cout<<"Size ;:" << nodesIndex->size() << "\n\n";
 }
 
 bool AI::isAttackerOnFreePath(World *myWorld, Node *attacker)
@@ -159,7 +160,7 @@ int AI::getEnemyPower(Node *enemy)
 
 long AI::getMaxMinIndex(std::vector<int> myVec, int situation)
 {
-    long res = myVec[0], resIndex = 0, vecSize = myVec.size();
+    unsigned long int res = myVec[0], resIndex = 0, vecSize = myVec.size();
     for(int cnt = 1; cnt < vecSize; cnt++ )
     {
         if((situation == 1 && myVec[cnt] > res) || (situation == 0 && myVec[cnt] < res))
@@ -287,10 +288,12 @@ int AI::Score(Node *src, Node *dst)
 void AI::supportStrategy(World *myWorld)
 {
     std::vector<int> suppList;
-    getNodesIndexbyRole(0, &suppList);
+    getNodesIndexbyRole(1, &suppList);
     
+    std::cout<<"Supp : " << suppList.size();
     if(suppList.size() <= 0)
         return;
+    
     
     std::vector<int> enemyIx;
     getNodesIndexbyRole(4, &enemyIx);
@@ -314,13 +317,13 @@ void AI::supportStrategy(World *myWorld)
             for(int cnt2 = 0; cnt2 < myWorld -> getMap() -> getNode(suppList[cnt]) -> q.size(); cnt2++)
                 priority.push_back(toAttackerPoint(myWorld, myWorld -> getMap() -> getNode(suppList[cnt]) -> q[cnt2], enemy));
             
-            long maxIdx = getMaxMinIndex(priority, 1); // check
+            long int maxIdx = getMaxMinIndex(priority, 1); // check
             int dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> q[maxIdx];
             std::cout<<dst;
             std::cout<<"\n";
             int countVal = myWorld -> getMap() -> getNode(suppList[cnt]) -> getArmyCount();
             myWorld -> moveArmy(suppList[cnt], warshall -> isNextHop(myWorld -> getMap() -> getNode(suppList[cnt]),
-                                                                     myWorld -> getMap() -> getNode(suppList[dst])), countVal);
+                                                                     myWorld -> getMap() -> getNode(dst)), countVal);
         }
         
         else
@@ -328,10 +331,11 @@ void AI::supportStrategy(World *myWorld)
             int countVal = myWorld -> getMap() -> getNode(suppList[cnt]) -> getArmyCount();
             int dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> circulateQueuePoll();
             
-            if(isAttackerOnFreePath(myWorld, myWorld -> getMap() -> getNode(suppList[dst])))
+            if(isAttackerOnFreePath(myWorld, myWorld -> getMap() -> getNode(dst)))
                 dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> circulateQueuePoll();
             myWorld -> moveArmy(suppList[cnt], warshall -> isNextHop(myWorld -> getMap() -> getNode(suppList[cnt]),
-                                                                     myWorld -> getMap() -> getNode(suppList[dst])), countVal);
+                                                                     myWorld -> getMap() -> getNode(dst)), countVal);
+            
         }
     }
 }
@@ -340,6 +344,8 @@ void AI::attackStrategy2(World *myWorld)
 {
     std::vector<int> attList;
     getNodesIndexbyRole(2, &attList);
+    //std::cout<<"att : " << attList.size() << "\n\n";
+    
     std::vector<Node*> neighbours;
     for(int cnt = 0; cnt < attList.size(); cnt++)
     {
@@ -457,6 +463,7 @@ void AI::doTurn(World *world)
         //    std::cout<<goh -> role << " ";
         //std::cout<<"\n\n";
         decRoles(world);
+        //std::cout<< "Total : " <<totalNodes.size() << "\n" << "MyNodes : "<< myNodes.size() << "\n" << "Att: " << attackers.size() << "\n" << "Supp : " << supporters.size() << "\n\n\n#####\n\n";
         supportStrategy(world);
         attackStrategy2(world);
     }
@@ -860,12 +867,12 @@ void AI::printDijkstra(std::vector<Node*> myNodes, Node *dst)
 {
     if( dst -> parent == nullptr )
     {
-        std::cout<< dst-> getArmyCount() << " ";
+        //std::cout<< dst-> getArmyCount() << " ";
         return;
     }
     
     printDijkstra(myNodes, dst -> parent );
-    std::cout<< dst->getArmyCount() << " ";
+    //std::cout<< dst->getArmyCount() << " ";
 }
 
 void AI::predictDijkstra(Node *src, Node *dst)
