@@ -5,7 +5,7 @@
 #include "World.h"
 #include "Warshall.hpp"
 #include "BfsNode.hpp"
-#include "NodeList.hpp"
+//#include "NodeList.hpp"
 
 /**
  * AI class.
@@ -59,7 +59,7 @@ private:
     
     // -------------------------------- GlOBAL VARIABLES HERE
     Warshall *warshall;
-    NODE_LIST **NodeList;
+    //NODE_LIST **NodeList;
     unsigned long int size; // or N = number of nodes
     // -------------------------------------------------------
     
@@ -87,7 +87,7 @@ public:
     int attackerDecisions(Node *attacker);
     bool relativeNeighbour(Node *myNode);
     void sortNodes(std::vector<Node*> Nodes, bool ascending); //check
-    int getMaxMinIndex(std::vector<int> myVec, int situation); // situation ->  1 : max , 2 : min
+    long getMaxMinIndex(std::vector<int> myVec, int situation); // situation ->  1 : max , 2 : min
     int getEnemyPower(Node *enemy);
     bool isPathFree(World *myWorld, Node *node, int role);
     int pathToRelative(Node *src, Node *node);
@@ -121,8 +121,8 @@ public:
     void getAttTarget(Node *src);
     
     void updateGraph(World *myWorld, int **myGraph);
-
-
+    
+    
 };
 
 #endif // _AI_H

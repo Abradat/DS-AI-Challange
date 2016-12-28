@@ -5,15 +5,15 @@
 #include <iostream>
 #include "Warshall.hpp"
 #include "BfsNode.hpp"
-#include "NodeList.hpp"
+//#include "NodeList.hpp"
 #include <queue>
 
 bool AI::BFS(World *myWorld, Node *start, Node *dst, std::vector<Node*> path)
 {
     std::vector<Node*> allNodes = myWorld -> getMap() -> getNodes();
-    int nSize = allNodes.size();
+    long nSize = allNodes.size();
     std::queue<int> q;
-
+    
     
     BFS_NODE **nodes = new BFS_NODE*[nSize];
     for(int i = 0; i < nSize; i++)
@@ -157,10 +157,10 @@ int AI::getEnemyPower(Node *enemy)
         return 100;
 }
 
-int AI::getMaxMinIndex(std::vector<int> myVec, int situation)
+long AI::getMaxMinIndex(std::vector<int> myVec, int situation)
 {
-    int res = myVec[0], resIndex = 0, vecSize = myVec.size();
-    for(int cnt = 0; cnt < vecSize; cnt++ )
+    long res = myVec[0], resIndex = 0, vecSize = myVec.size();
+    for(int cnt = 1; cnt < vecSize; cnt++ )
     {
         if((situation == 1 && myVec[cnt] > res) || (situation == 0 && myVec[cnt] < res))
         {
@@ -287,7 +287,8 @@ int AI::Score(Node *src, Node *dst)
 void AI::supportStrategy(World *myWorld)
 {
     std::vector<int> suppList;
-    getNodesIndexbyRole(1, &suppList);
+    getNodesIndexbyRole(0, &suppList);
+    
     if(suppList.size() <= 0)
         return;
     
@@ -313,8 +314,10 @@ void AI::supportStrategy(World *myWorld)
             for(int cnt2 = 0; cnt2 < myWorld -> getMap() -> getNode(suppList[cnt]) -> q.size(); cnt2++)
                 priority.push_back(toAttackerPoint(myWorld, myWorld -> getMap() -> getNode(suppList[cnt]) -> q[cnt2], enemy));
             
-            int maxIdx = getMaxMinIndex(priority, 1); // check
+            long maxIdx = getMaxMinIndex(priority, 1); // check
             int dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> q[maxIdx];
+            std::cout<<dst;
+            std::cout<<"\n";
             int countVal = myWorld -> getMap() -> getNode(suppList[cnt]) -> getArmyCount();
             myWorld -> moveArmy(suppList[cnt], warshall -> isNextHop(myWorld -> getMap() -> getNode(suppList[cnt]),
                                                                      myWorld -> getMap() -> getNode(suppList[dst])), countVal);
@@ -324,6 +327,7 @@ void AI::supportStrategy(World *myWorld)
         {
             int countVal = myWorld -> getMap() -> getNode(suppList[cnt]) -> getArmyCount();
             int dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> circulateQueuePoll();
+            
             if(isAttackerOnFreePath(myWorld, myWorld -> getMap() -> getNode(suppList[dst])))
                 dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> circulateQueuePoll();
             myWorld -> moveArmy(suppList[cnt], warshall -> isNextHop(myWorld -> getMap() -> getNode(suppList[cnt]),
@@ -383,9 +387,43 @@ void AI::doTurn(World *world)
     if(init)
     {
         /*
-        //std::cout<<INT_MAX<<std::endl;
-        myNodes = world -> getMyNodes();
-        //attackers = world ->getMyNodes();
+         //std::cout<<INT_MAX<<std::endl;
+         myNodes = world -> getMyNodes();
+         //attackers = world ->getMyNodes();
+         
+         myTeamId = world -> getMyId();
+         
+         if(myTeamId == 1)
+         oppTeamId = 0;
+         else
+         oppTeamId = 1;
+         
+         escapeConst = world -> getEscapeConstant();
+         nodeBounsConst = world -> getNodeBonusConstant();
+         edgeBounsConst = world -> getEdgeBonusConstant();
+         lArmyMaxConst = world -> getLowArmyBound();
+         mArmyMaxConst = world -> getMediumArmyBound();
+         lCasConst = world -> getLowCasualtyCoefficient();
+         mCasConst = world -> getMediumCasualtyCoefficient();
+         nodesSize = world -> getMap() -> getNodes().size();
+         
+         if(world -> getMap() ->getNodes().size() == 37)
+         map = 1;
+         else if(world -> getMap() -> getNodes().size() == 30)
+         map = 2;
+         else if(world -> getMap() -> getNodes().size() == 14)
+         map = 3;
+         else
+         map = 4;
+         
+         totalTurn = world -> getTotalTurns();
+         tactics = 1;
+         
+         graph = new int*[world -> getMap() -> getNodes().size()];
+         for(int cnt = 0; cnt < world -> getMap() -> getNodes().size(); cnt ++)
+         graph[cnt] = new int [world -> getMap() -> getNodes().size()];
+         */
+        
         
         myTeamId = world -> getMyId();
         
@@ -403,38 +441,24 @@ void AI::doTurn(World *world)
         mCasConst = world -> getMediumCasualtyCoefficient();
         nodesSize = world -> getMap() -> getNodes().size();
         
-        if(world -> getMap() ->getNodes().size() == 37)
-            map = 1;
-        else if(world -> getMap() -> getNodes().size() == 30)
-            map = 2;
-        else if(world -> getMap() -> getNodes().size() == 14)
-            map = 3;
-        else
-            map = 4;
-        
-        totalTurn = world -> getTotalTurns();
-        tactics = 1;
-        
-        graph = new int*[world -> getMap() -> getNodes().size()];
-        for(int cnt = 0; cnt < world -> getMap() -> getNodes().size(); cnt ++)
-            graph[cnt] = new int [world -> getMap() -> getNodes().size()];
-        */
-        
-        
         
         warshall = new Warshall(world);
         size = world -> getMap() -> getNodes().size();
-        NodeList = new NODE_LIST*[size];
-        for(int  i = 0; i < size; i++)
-            NodeList[i] = new NODE_LIST();
+        //NodeList = new NODE_LIST*[size];
+        //for(int  i = 0; i < size; i++)
+         //   NodeList[i] = new NODE_LIST();
         
         init = false;
     }
     
     try{
-    decRoles(world);
-    supportStrategy(world);
-    attackStrategy2(world);
+        
+        //for(auto& goh : totalNodes)
+        //    std::cout<<goh -> role << " ";
+        //std::cout<<"\n\n";
+        decRoles(world);
+        supportStrategy(world);
+        attackStrategy2(world);
     }
     catch(std::exception e)
     {
@@ -443,68 +467,68 @@ void AI::doTurn(World *world)
     // Every Rounds Executeables Start
     
     /*myNodes = world -> getMyNodes();
-    totalNodes = world -> getMap() -> getNodes();
-    //decRoles(myNodes, totalNodes);
-    decAttackerStatus(attackers);
-    updateGraph(world, graph);
-    */
+     totalNodes = world -> getMap() -> getNodes();
+     //decRoles(myNodes, totalNodes);
+     decAttackerStatus(attackers);
+     updateGraph(world, graph);
+     */
     //toSupporters(world, myNodes, supporters, transporters);
     
     //toAttackers(world, supporters, attackers);
     
     //for(auto& test: myNodes)
     //{
-     //   if(test -> getIndex() == 0)
-     //       dijkstra(myNodes, supporters, test);
+    //   if(test -> getIndex() == 0)
+    //       dijkstra(myNodes, supporters, test);
     //}
     //dijkstra(myNodes, supporters, test);
     /*for(auto& myNode : myNodes)
-    {
-        std::cout<< myNode->getArmyCount() << " : " << myNode -> dist << std::endl;
-    }
-    std::cout<<"#######\n\n\n";
+     {
+     std::cout<< myNode->getArmyCount() << " : " << myNode -> dist << std::endl;
+     }
+     std::cout<<"#######\n\n\n";
      */
     /*
-    for(auto& test: myNodes)
-    {
-        if(test -> getIndex() == 0)
-            an = test;
-    }
-    
-    for(auto& myNode: myNodes)
-    {
-        if(myNode == an)
-            continue;
-        
-        printDijkstra(myNodes, myNode);
-        std::cout<<"\n";
-        predictDijkstra(an, myNode);
-        std::cout<<nextNode -> getArmyCount() <<"\n";
-    }
-    
-    std::cout<<"\n\n\n\n######\n";
+     for(auto& test: myNodes)
+     {
+     if(test -> getIndex() == 0)
+     an = test;
+     }
+     
+     for(auto& myNode: myNodes)
+     {
+     if(myNode == an)
+     continue;
+     
+     printDijkstra(myNodes, myNode);
+     std::cout<<"\n";
+     predictDijkstra(an, myNode);
+     std::cout<<nextNode -> getArmyCount() <<"\n";
+     }
+     
+     std::cout<<"\n\n\n\n######\n";
      */
     //Every Round Executables Finish
     
     //Debugging Prints Start
     /*
-    std::cout<< attackers.size() << " attackers"<<std::endl;
-    std::cout<< supporters.size() << " supporters" <<std::endl;
-    std::cout<< transporters.size() << " transporters"<< std::endl;
-    a =0, b=0, c=0;
-    for(auto& attacker : attackers)
-    {
-        if(attacker -> status == 1)
-            a += 1;
-        else if(attacker -> status == 2)
-            b += 1;
-        else if(attacker -> status == 3)
-            c += 1;
-    }
-    std::cout<< a << " conq att\n";
-    std::cout<< b <<" att\n";
-    std::cout<< c <<" conq";
-    std:: cout<<"\n\n\n\n";
+     std::cout<< attackers.size() << " attackers"<<std::endl;
+     std::cout<< supporters.size() << " supporters" <<std::endl;
+     std::cout<< transporters.size() << " transporters"<< std::endl;
+     a =0, b=0, c=0;
+     for(auto& attacker : attackers)
+     {
+     if(attacker -> status == 1)
+     a += 1;
+     else if(attacker -> status == 2)
+     b += 1;
+     else if(attacker -> status == 3)
+     c += 1;
+     }
+     std::cout<< a << " conq att\n";
+     std::cout<< b <<" att\n";
+     std::cout<< c <<" conq";
+     std:: cout<<"\n\n\n\n";
      */
     //Debugging Prints Finish
     
@@ -516,69 +540,69 @@ void AI::doTurn(World *world)
     //    if(tactics == 1)
     //    {
     //        attackers = world -> getMyNodes();
-            /*for(auto& attacker : attackers)
-            {
-                int attackerPower = attacker -> getArmyCount();
-                int aMeasured = measurePower(attackerPower);
-                neighbours = attacker -> getNeighbours();
-                for(auto& neighbour : neighbours)
-                {
-                    if(neighbour -> getOwner() == -1 || neighbour -> getOwner() == oppTeamId)
-                    {
-                        if(attackerPower > 40)
-                            world -> moveArmy(attacker, neighbour, attackerPower - 1);
-                        else if(attackerPower > 30 )
-                            world -> moveArmy(attacker, neighbour, 20);
-                        else if(attackerPower > 20)
-                            world -> moveArmy(attacker, neighbour, 10);
-                        else if(attackerPower > 15)
-                            world -> moveArmy(attacker, neighbour, 5);
-                        //else
-                        //    world -> moveArmy(attacker, neighbour, 3);
-                    }
-                }
-            }
-             */
-      //      attackStrategy(world, myNodes, attackers);
-      //  }
+    /*for(auto& attacker : attackers)
+     {
+     int attackerPower = attacker -> getArmyCount();
+     int aMeasured = measurePower(attackerPower);
+     neighbours = attacker -> getNeighbours();
+     for(auto& neighbour : neighbours)
+     {
+     if(neighbour -> getOwner() == -1 || neighbour -> getOwner() == oppTeamId)
+     {
+     if(attackerPower > 40)
+     world -> moveArmy(attacker, neighbour, attackerPower - 1);
+     else if(attackerPower > 30 )
+     world -> moveArmy(attacker, neighbour, 20);
+     else if(attackerPower > 20)
+     world -> moveArmy(attacker, neighbour, 10);
+     else if(attackerPower > 15)
+     world -> moveArmy(attacker, neighbour, 5);
+     //else
+     //    world -> moveArmy(attacker, neighbour, 3);
+     }
+     }
+     }
+     */
+    //      attackStrategy(world, myNodes, attackers);
+    //  }
     //}
     /*if(map == 2)
-    {
-        if(tactics == 1)
-        {
-            attackers = world -> getMyNodes();
-            for(auto& attacker : attackers)
-            {
-                int attackerPower = attacker -> getArmyCount();
-                int aMeasured = measurePower(attackerPower);
-                neighbours = attacker -> getNeighbours();
-                for(auto& neighbour : neighbours)
-                {
-                    if(neighbour -> getOwner() == -1 || neighbour -> getOwner() == oppTeamId)
-                    {
-                        if(attackerPower > 40)
-                            world -> moveArmy(attacker, neighbour, attackerPower/2);
-                        else if(attackerPower > 30 )
-                            world -> moveArmy(attacker, neighbour, 20);
-                        else if(attackerPower > 20)
-                            world -> moveArmy(attacker, neighbour, 10);
-                        else if(attackerPower > 15)
-                            world -> moveArmy(attacker, neighbour, 5);
-                        else
-                            world -> moveArmy(attacker, neighbour, 3);
-                    }
-                }
-            }
-        }
-    }
+     {
+     if(tactics == 1)
+     {
+     attackers = world -> getMyNodes();
+     for(auto& attacker : attackers)
+     {
+     int attackerPower = attacker -> getArmyCount();
+     int aMeasured = measurePower(attackerPower);
+     neighbours = attacker -> getNeighbours();
+     for(auto& neighbour : neighbours)
+     {
+     if(neighbour -> getOwner() == -1 || neighbour -> getOwner() == oppTeamId)
+     {
+     if(attackerPower > 40)
+     world -> moveArmy(attacker, neighbour, attackerPower/2);
+     else if(attackerPower > 30 )
+     world -> moveArmy(attacker, neighbour, 20);
+     else if(attackerPower > 20)
+     world -> moveArmy(attacker, neighbour, 10);
+     else if(attackerPower > 15)
+     world -> moveArmy(attacker, neighbour, 5);
+     else
+     world -> moveArmy(attacker, neighbour, 3);
+     }
+     }
+     }
+     }
+     }
      */
     /*for(auto& myNode: myNodes)
-    {
-        std::cout<<myNode->getIndex() << " : " << myNode->getArmyCount()<<std::endl;
-    }
-    std::cout<<"#####"<<std::endl<<std::endl;
+     {
+     std::cout<<myNode->getIndex() << " : " << myNode->getArmyCount()<<std::endl;
+     }
+     std::cout<<"#####"<<std::endl<<std::endl;
      */
-
+    
 }
 
 int AI::measurePower(int armyCount)
@@ -636,68 +660,96 @@ void AI::decRoles(World *myWorld)
         
         
     }
-    //transporters.clear();
-    /*
-    for(auto& myNode : myNodes)
-        myNode -> role = 0;
     
-    for (auto& myAttacker : myNodes)
+    for(auto& attacker : attackers)
     {
-        neighbours = myAttacker -> getNeighbours();
-        for(auto& neighbour : neighbours)
-        {
-            if(neighbour -> getOwner() != myTeamId)
-            {
-                myAttacker-> role = 1;
-                attackers.push_back(myAttacker);
-                break;
-            }
-        }
+        if(!isAttackerOnFreePath(myWorld, attacker))
+            newAttackers.push_back(attacker);
+        
     }
-    */
-    //neighbours.clear();
-    /*
-    for(auto &mySupporter : attackers)
+    
+    attackers.clear();
+    for(auto& newAttacker : newAttackers)
+        attackers.push_back(newAttacker);
+    
+    for(auto& supporter : supporters)
     {
-        neighbours = mySupporter -> getNeighbours();
-        for(auto & neighbour : neighbours)
+        int minF = warshall -> minDistanceFrom(supporter, attackers);
+        if(minF < SUPP_THRESHOLD)
+            minF = SUPP_THRESHOLD;
+        
+        std::vector<int>newQ;
+        for(auto& attacker : attackers)
         {
-            if(neighbour -> role != 1 && neighbour -> role != 2 && neighbour -> getOwner() == myTeamId)
-            {
-                neighbour -> role = 2;
-                supporters.push_back(neighbour);
-            }
-        }
-    }
-    neighbours.clear();
-    for(auto& myTransporter : myNodes)
-    {
-        if(myTransporter-> role != 1 && myTransporter -> role != 2)
-        {
-            myTransporter -> role = 3;
-            transporters.push_back(myTransporter);
-        }
-    }
-    neighbours.clear();
-     */
-    /*
-    for(auto& mySupporter : myNodes)
-    {
-        if(mySupporter -> role != 1)
-        {
-            mySupporter -> role = 2;
-            supporters.push_back(mySupporter);
+            if(warshall -> D[supporter -> getIndex()][attacker -> getIndex()] <= minF)
+                newQ.push_back(attacker -> getIndex());
+            supporter -> myMerge(newQ);
         }
         
     }
     
-    for(auto& node : totalNodes)
-    {
-        if(node -> getOwner() == -1)
-            node -> role = 2;
-        else if( node -> getOwner() == oppTeamId)
-            node -> role = 3;
-    }
+    //transporters.clear();
+    /*
+     for(auto& myNode : myNodes)
+     myNode -> role = 0;
+     
+     for (auto& myAttacker : myNodes)
+     {
+     neighbours = myAttacker -> getNeighbours();
+     for(auto& neighbour : neighbours)
+     {
+     if(neighbour -> getOwner() != myTeamId)
+     {
+     myAttacker-> role = 1;
+     attackers.push_back(myAttacker);
+     break;
+     }
+     }
+     }
+     */
+    //neighbours.clear();
+    /*
+     for(auto &mySupporter : attackers)
+     {
+     neighbours = mySupporter -> getNeighbours();
+     for(auto & neighbour : neighbours)
+     {
+     if(neighbour -> role != 1 && neighbour -> role != 2 && neighbour -> getOwner() == myTeamId)
+     {
+     neighbour -> role = 2;
+     supporters.push_back(neighbour);
+     }
+     }
+     }
+     neighbours.clear();
+     for(auto& myTransporter : myNodes)
+     {
+     if(myTransporter-> role != 1 && myTransporter -> role != 2)
+     {
+     myTransporter -> role = 3;
+     transporters.push_back(myTransporter);
+     }
+     }
+     neighbours.clear();
+     */
+    /*
+     for(auto& mySupporter : myNodes)
+     {
+     if(mySupporter -> role != 1)
+     {
+     mySupporter -> role = 2;
+     supporters.push_back(mySupporter);
+     }
+     
+     }
+     
+     for(auto& node : totalNodes)
+     {
+     if(node -> getOwner() == -1)
+     node -> role = 2;
+     else if( node -> getOwner() == oppTeamId)
+     node -> role = 3;
+     }
      */
     
     
@@ -991,11 +1043,11 @@ void AI::updateGraph(World *myWrold, int **myGraph)
     }
     
     /*for (int cnt1 = 0; cnt1 < nodesSize; cnt1++)
-    {
-        for(int cnt2 =0; cnt2 < nodesSize; cnt2++)
-            std::cout<<myGraph[cnt1][cnt2] << " ";
-        std::cout<<"\n";
-    }
-    std::cout<<"\n";
+     {
+     for(int cnt2 =0; cnt2 < nodesSize; cnt2++)
+     std::cout<<myGraph[cnt1][cnt2] << " ";
+     std::cout<<"\n";
+     }
+     std::cout<<"\n";
      */
 }

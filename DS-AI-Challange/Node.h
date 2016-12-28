@@ -46,7 +46,7 @@ public:
     void setArmyCount(int armyCount);
 
     void setIndex(int index);
-    
+
     int role = 0; // 1 : support, 2: attack, 3: free, 4: enemy
     int status = 0; // for attackers - > 1 : conquare and attack, 2: attack, 3: conquare
     int dist;
@@ -63,8 +63,6 @@ public:
     
     int circulateQueuePoll();
     void myMerge(std::vector<int>newF);
-    
-
 };
 
 #endif /* NODE_H_ */

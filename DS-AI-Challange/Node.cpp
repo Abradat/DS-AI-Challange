@@ -12,7 +12,6 @@ Node::Node(int index) {
 	this->index = index;
 	this->owner = -1;
 	this->armyCount = 0;
-    underAttack = false;
 }
 
 Node::~Node() {
@@ -85,3 +84,4 @@ void Node::myMerge(std::vector<int> newF)
     }
     q = newQ;
 }
+
