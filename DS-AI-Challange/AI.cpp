@@ -66,7 +66,7 @@ void AI::getNodesIndexbyRole(int role, std::vector<int> *nodesIndex)
         if(totalNodes[i] -> role == role)
             nodesIndex -> push_back(i);
     }
-    std::cout<<"Size ;:" << nodesIndex->size() << "\n\n";
+    //std::cout<<"Size ;:" << nodesIndex->size() << "\n\n";
 }
 
 bool AI::isAttackerOnFreePath(World *myWorld, Node *attacker)
@@ -290,7 +290,7 @@ void AI::supportStrategy(World *myWorld)
     std::vector<int> suppList;
     getNodesIndexbyRole(1, &suppList);
     
-    std::cout<<"Supp : " << suppList.size();
+    //std::cout<<"Supp : " << suppList.size();
     if(suppList.size() <= 0)
         return;
     
@@ -319,8 +319,8 @@ void AI::supportStrategy(World *myWorld)
             
             long int maxIdx = getMaxMinIndex(priority, 1); // check
             int dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> q[maxIdx];
-            std::cout<<dst;
-            std::cout<<"\n";
+            //std::cout<<dst;
+            //std::cout<<"\n";
             int countVal = myWorld -> getMap() -> getNode(suppList[cnt]) -> getArmyCount();
             myWorld -> moveArmy(suppList[cnt], warshall -> isNextHop(myWorld -> getMap() -> getNode(suppList[cnt]),
                                                                      myWorld -> getMap() -> getNode(dst)), countVal);
@@ -988,10 +988,10 @@ void AI::attackStrategy(World *myWorld, std::vector<Node*> myNodes, std::vector<
         opps = myWorld -> getOpponentNodes();
         //sorting Start
         //sort(opps, 1);
-        std::cout<<"From " << attacker -> getArmyCount() << " : \n";
-        for(auto& opp: opps)
-            std::cout<<opp->dist << " ";
-        std::cout<<"\n\n#######\n\n\n";
+        //std::cout<<"From " << attacker -> getArmyCount() << " : \n";
+        //for(auto& opp: opps)
+        //    std::cout<<opp->dist << " ";
+        //std::cout<<"\n\n#######\n\n\n";
         //sorting finish
         attacker -> oppNodes = opps;
         getAttTarget(attacker);
