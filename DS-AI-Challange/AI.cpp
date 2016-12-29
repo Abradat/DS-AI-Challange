@@ -390,7 +390,7 @@ void AI::attackStrategy2(World *myWorld)
 
 void AI::doTurn(World *world)
 {
-    srand(time(NULL));
+    srand((unsigned)time(NULL));
     
     if(init)
     {
@@ -662,10 +662,10 @@ void AI::decRoles(World *myWorld)
                 node -> role = 2;
         }
         
-        if(node -> role == 1)
-            supporters.push_back(node);
-        else if(node -> role == 2)
+        if(node -> role == 2)
             attackers.push_back(node);
+        else if(node -> role == 1)
+            supporters.push_back(node);
         
         
     }
