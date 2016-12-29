@@ -74,6 +74,7 @@ bool AI::isAttackerOnFreePath(World *myWorld, Node *attacker)
     std::vector<Node*> neighbours;
     if(attackerDecisions(attacker) <= 1)
     {
+        neighbours = attacker -> getNeighbours();
         for(auto& neighbour : neighbours)
         {
             if(neighbour -> role == 3 && isPathFree(myWorld, neighbour, myTeamId))
@@ -128,16 +129,34 @@ bool AI::relativeNeighbour(Node *myNode)
 
 void AI::sortNodes(std::vector<Node*> Nodes, bool ascending)
 {
-    
     unsigned long int size = Nodes.size();
     Node *aux;
+    bool flag = true;
+    while(flag)
+    {
+        flag = false;
+        for(int i =0; i < size - 1; i++)
+        {
+            if((Nodes[i] -> getArmyCount() < Nodes[i + 1] -> getArmyCount()) != ascending)
+            {
+                aux = Nodes[i];
+                Nodes[i] = Nodes[i + 1];
+                Nodes[i + 1] = aux;
+                flag = true;
+            }
+        }
+    }
+    for(int an = 0; an < size; an++)
+        std::cout<<Nodes[an] -> getArmyCount() << " ";
+    std::cout << "\n\n\n######\n\n";
+    /*
     if(ascending)
     {
         for(int cnt1 = 0; cnt1 < size; cnt1++)
         {
             for(int cnt2 = cnt1; cnt2 < size; cnt2++)
             {
-                if((Nodes[cnt1] -> getArmyCount() < Nodes[cnt2] -> getArmyCount()) != ascending)
+                if(Nodes[cnt1] -> getArmyCount() < Nodes[cnt2] -> getArmyCount())
                 {
                     aux = Nodes[cnt1];
                     Nodes[cnt1] = Nodes[cnt2];
@@ -146,6 +165,22 @@ void AI::sortNodes(std::vector<Node*> Nodes, bool ascending)
             }
         }
     }
+    else
+    {
+        for(int cnt1 = 0; cnt1 < size; cnt1++)
+        {
+            for(int cnt2 = cnt1; cnt2 < size; cnt2++)
+            {
+                if(Nodes[cnt1] -> getArmyCount() > Nodes[cnt2] -> getArmyCount())
+                {
+                    aux = Nodes[cnt1];
+                    Nodes[cnt1] = Nodes[cnt2];
+                    Nodes[cnt2] = Nodes[cnt1];
+                }
+            }
+        }
+    }
+     */
 }
 
 int AI::getEnemyPower(Node *enemy)
@@ -233,7 +268,7 @@ int AI::Score(Node *src, Node *dst)
     std::vector<Node*> srcNeighbours = src -> getNeighbours();
     std::vector<Node*> dstNeighbours = dst -> getNeighbours();
     
-    score += srcNeighbours.size() * VERTEX_DEGREE;
+    score += dstNeighbours.size() * VERTEX_DEGREE;
     
     int myPower;
     if(src -> getArmyCount() <= 10)
@@ -248,14 +283,14 @@ int AI::Score(Node *src, Node *dst)
         if(dst -> getArmyCount() > myPower)
             score -= NOT_ATTACK_ENEMY;
         else
-            score += (myPower - dst -> getArmyCount() + 1) * ENEMY_POWER;
+            score += (myPower - (dst -> getArmyCount()) + 1) * ENEMY_POWER;
     }
     
     bool isFriend = false;
     
     for(auto& srcNeighbour : srcNeighbours)
     {
-        if(srcNeighbour -> role <= 1)
+        if(srcNeighbour -> role <= 2)
             isFriend = true;
     }
     
@@ -265,10 +300,9 @@ int AI::Score(Node *src, Node *dst)
             score += (MAX_DISTANCE_TO_FRIEND - pathToRelative(src, dst)) * DISTANCE_TO_OUR_UNIT;
     }
     
-    int enemyCounter;
     if(dst -> role == 4)
     {
-        enemyCounter = 0;
+        int enemyCounter = 0;
         for(auto& dstNeighbour : dstNeighbours)
         {
             if(dstNeighbour -> getOwner() >= 0 && dstNeighbour -> getOwner() != myTeamId)
@@ -390,7 +424,7 @@ void AI::attackStrategy2(World *myWorld)
 
 void AI::doTurn(World *world)
 {
-    srand(time(NULL));
+    srand((unsigned)time(NULL));
     
     if(init)
     {

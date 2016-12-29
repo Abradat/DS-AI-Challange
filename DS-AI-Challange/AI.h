@@ -70,7 +70,7 @@ private:
     //std::vector<Node*> transporters;
     std::vector<Node*> attackers;
     std::vector<Node*> newAttackers;
-    std::vector<Node*> neighbours;
+    //std::vector<Node*> neighbours;
     std::vector<Node*> myNodes;
     std::vector<Node*> totalNodes;
     
