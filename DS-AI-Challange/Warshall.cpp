@@ -98,7 +98,8 @@ int Warshall::avgDistanceList(Node *from, std::vector<Node*> list)
         }
     }
     // check
-    return static_cast<int>(AVG/cnt);
+    //return static_cast<int>(AVG/cnt);
+    return AVG/cnt;
 }
 
 bool Warshall::pathExist(Node *start, Node *dst)

@@ -328,6 +328,7 @@ void AI::supportStrategy(World *myWorld)
         
         else
         {
+            
             int countVal = myWorld -> getMap() -> getNode(suppList[cnt]) -> getArmyCount();
             int dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> circulateQueuePoll();
             
@@ -335,6 +336,7 @@ void AI::supportStrategy(World *myWorld)
                 dst = myWorld -> getMap() -> getNode(suppList[cnt]) -> circulateQueuePoll();
             myWorld -> moveArmy(suppList[cnt], warshall -> isNextHop(myWorld -> getMap() -> getNode(suppList[cnt]),
                                                                      myWorld -> getMap() -> getNode(dst)), countVal);
+             
             
         }
     }
