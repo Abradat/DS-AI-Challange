@@ -58,7 +58,7 @@ int Node::circulateQueuePoll()
     int a = -1;
     if(q.size() > 0)
     {
-        a = q[0];
+        a = q.front();
         q.erase(q.begin());
         q.push_back(a);
     }

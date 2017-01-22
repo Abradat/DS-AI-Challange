@@ -371,6 +371,7 @@ void AI::supportStrategy(World *myWorld)
             myWorld -> moveArmy(suppList[cnt], warshall -> isNextHop(myWorld -> getMap() -> getNode(suppList[cnt]),
                                                                      myWorld -> getMap() -> getNode(dst)), countVal);
              
+             
             
         }
     }
